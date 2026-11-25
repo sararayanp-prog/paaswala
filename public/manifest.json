@@ -1,0 +1,11 @@
+{
+  "name": "PaasWala",
+  "short_name": "PaasWala",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a5cff",
+  "icons": [
+    { "src": "https://cdn-icons-png.flaticon.com/512/3081/3081559.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

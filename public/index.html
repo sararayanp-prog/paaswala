@@ -15,17 +15,19 @@ header p{margin:4px 0 0;font-size:14px}
 .card b{font-size:16px;display:block;margin-top:6px}
 .card small{font-size:12px;color:#555}
 .box{margin:12px;padding:14px;border:1px solid #ddd;border-radius:12px;display:none}
-input,select,textarea{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:8px;font-size:15px}
+input,select{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:8px;font-size:15px;box-sizing:border-box}
 button{background:#1a5cff;color:#fff;border:0;padding:12px;border-radius:10px;width:100%;font-size:16px;margin-top:6px}
 .list{margin:12px}
 .item{border:1px solid #ddd;padding:10px;border-radius:10px;margin-bottom:8px}
 .upi{background:#fff3cd;padding:12px;margin:12px;border-radius:10px;text-align:center;font-size:16px}
+.qrbox{text-align:center;background:#f9f9f9;padding:12px;border-radius:12px;margin-bottom:10px}
+.qrbox img{width:220px;height:220px;border:1px solid #ddd;border-radius:10px}
 </style>
 </head>
 <body>
 <header><h1>🛍️ PaasWala</h1><p>Paas Ka Kaam • Paas Ka Samaan • 25 KM Ke Andar</p></header>
 
-<div class="upi">Pay Karne Ke Liye UPI: <b id="upiText">Loading...</b><br><small>Pay karke UTR yahan daalo</small></div>
+<div class="upi">Pay Karne Ke Liye UPI: <b id="upiText">Loading...</b></div>
 
 <div class="grid">
 <div class="card" onclick="show('sell')"><span>🛒</span><b>Bechna / Kharidna</b><small>Sell / Buy / Rent</small></div>
@@ -48,23 +50,47 @@ button{background:#1a5cff;color:#fff;border:0;padding:12px;border-radius:10px;wi
 
 <div id="list" class="box"><h3>Paas Wala Dekho</h3><button onclick="loadAll()">Paas Wala Sab Dekho</button><div id="listArea"></div></div>
 
-<div id="pay" class="box"><h3>Payment Bhejo</h3><input id="pName" placeholder="Tumhara Naam"><input id="pPhone" placeholder="Phone Number"><input id="pPlan" placeholder="Plan - ITEM / WORKER / MAZDOORI_DAY"><input id="pUtr" placeholder="UTR Number"><button onclick="sendPay()">UTR Bhejo</button><p>Admin Telegram pe dekh ke Accept karega, phir Add Live ho jayega.</p></div>
+<div id="pay" class="box">
+<h3>Payment Karo</h3>
+<div class="qrbox">
+<h3 id="payAmount">Pay Karna Hai: Rs 30</h3>
+<img id="qrImg" src="">
+<p>QR Scan Karo - Ya UPI Copy Karke Pay Karo</p>
+</div>
+<input id="pName" placeholder="Tumhara Naam">
+<input id="pPhone" placeholder="Phone Number">
+<input id="pPlan" placeholder="Plan - ITEM / WORKER / MAZDOORI_DAY">
+<input id="pUtr" placeholder="UTR Number Yahan Likho">
+<button onclick="sendPay()">UTR Submit Karo</button>
+<p>Admin Telegram pe dekh ke Accept karega, phir Add Live ho jayega.</p>
+</div>
 
 <div id="report" class="box"><h3>Report Karo</h3><input id="rId" type="number" placeholder="Item ID"><input id="rBy" placeholder="Tumhara Phone"><input id="rReason" placeholder="Kya galat hai?"><input id="rOwner" placeholder="Uska Phone - Jiska Add Hai"><button onclick="sendReport()">Report Karo</button><p>1st - Notification, 2nd - Warning, 3rd - Auto Block</p></div>
 
-<div id="help" class="box"><h3>Kaise Chalega?</h3><p>1. Apna kaam / samaan daalo<br>2. UPI se pay karo, UTR daalo<br>3. Admin Accept karega, Add Live<br>4. Paas wala hi dekhega - 25 KM ke andar, Delivery 10 KM</p></div>
+<div id="help" class="box"><h3>Kaise Chalega?</h3><p>1. Apna kaam / samaan daalo<br>2. QR se pay karo, UTR daalo<br>3. Admin Accept karega, Add Live<br>4. Paas wala hi dekhega - 25 KM ke andar, Delivery 10 KM</p></div>
 
 <div class="list" id="mainList"></div>
 
 <script>
+let myUpi = '';
+let currentPay = { amount: 30, plan: 'ITEM' };
 function show(id){ document.querySelectorAll('.box').forEach(b=>b.style.display='none'); document.getElementById(id).style.display='block'; window.scrollTo(0,400); }
 async function getLoc(){ return new Promise((res)=>{ navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude}),()=>res({lat:22.3,lng:73.18})) }); }
-fetch('/api/upi').then(r=>r.json()).then(d=>{ document.getElementById('upiText').innerText=d.upi || 'UPI nahi mila'; });
-async function addItem(){ let l=await getLoc(); let r=await fetch('/api/items',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:document.getElementById('sTitle').value,price:Number(document.getElementById('sPrice').value),type:document.getElementById('sType').value,rent_type:'',area:'',phone:document.getElementById('sPhone').value,lat:l.lat,lng:l.lng})}); alert('Add ho gaya! Ab Payment me UTR bhejo'); }
-async function addWorker(){ let l=await getLoc(); await fetch('/api/workers',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.getElementById('wName').value,skill:document.getElementById('wSkill').value,charge:Number(document.getElementById('wCharge').value),area:'',phone:document.getElementById('wPhone').value,lat:l.lat,lng:l.lng})}); alert('Worker Add ho gaya!'); }
-async function addMazdoori(){ let l=await getLoc(); await fetch('/api/mazdoori',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kya_karwana:document.getElementById('mKya').value,kab:document.getElementById('mKab').value,paisa:Number(document.getElementById('mPaisa').value),kitne_aadmi:Number(document.getElementById('mAadmi').value),area:'',phone:document.getElementById('mPhone').value,lat:l.lat,lng:l.lng})}); alert('Mazdoori Add ho gayi!'); }
-async function addDelivery(){ let l=await getLoc(); await fetch('/api/delivery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({shop_name:document.getElementById('dShop').value,kya_bhejna:document.getElementById('dKya').value,kahan_bhejna:document.getElementById('dKahan').value,shop_phone:document.getElementById('dPhone').value,shop_lat:l.lat,shop_lng:l.lng,km:Number(document.getElementById('dKm').value)})}); alert('Delivery Add ho gayi!'); }
-async function sendPay(){ await fetch('/api/pay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.getElementById('pName').value,phone:document.getElementById('pPhone').value,plan:document.getElementById('pPlan').value,utr:document.getElementById('pUtr').value})}); alert('UTR Admin ko bhej diya!'); }
+fetch('/api/upi').then(r=>r.json()).then(d=>{ myUpi = d.upi; document.getElementById('upiText').innerText = d.upi || 'UPI nahi mila'; });
+function openPay(amount, plan){
+  currentPay = { amount, plan };
+  document.getElementById('pay').style.display = 'block';
+  document.getElementById('pPlan').value = plan;
+  document.getElementById('payAmount').innerText = 'Pay Karna Hai: Rs ' + amount;
+  let upiLink = 'upi://pay?pa=' + encodeURIComponent(myUpi) + '&pn=PaasWala&am=' + amount + '&cu=INR';
+  document.getElementById('qrImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(upiLink);
+  document.getElementById('pay').scrollIntoView({behavior:'smooth'});
+}
+async function addItem(){ let l=await getLoc(); await fetch('/api/items',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:document.getElementById('sTitle').value,price:Number(document.getElementById('sPrice').value),type:document.getElementById('sType').value,rent_type:'',area:'',phone:document.getElementById('sPhone').value,lat:l.lat,lng:l.lng})}); document.getElementById('pPhone').value = document.getElementById('sPhone').value; openPay(30,'ITEM'); }
+async function addWorker(){ let l=await getLoc(); await fetch('/api/workers',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.getElementById('wName').value,skill:document.getElementById('wSkill').value,charge:Number(document.getElementById('wCharge').value),area:'',phone:document.getElementById('wPhone').value,lat:l.lat,lng:l.lng})}); document.getElementById('pPhone').value = document.getElementById('wPhone').value; openPay(10,'WORKER'); }
+async function addMazdoori(){ let l=await getLoc(); await fetch('/api/mazdoori',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kya_karwana:document.getElementById('mKya').value,kab:document.getElementById('mKab').value,paisa:Number(document.getElementById('mPaisa').value),kitne_aadmi:Number(document.getElementById('mAadmi').value),area:'',phone:document.getElementById('mPhone').value,lat:l.lat,lng:l.lng})}); document.getElementById('pPhone').value = document.getElementById('mPhone').value; openPay(10,'MAZDOORI_DAY'); }
+async function addDelivery(){ let l=await getLoc(); await fetch('/api/delivery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({shop_name:document.getElementById('dShop').value,kya_bhejna:document.getElementById('dKya').value,kahan_bhejna:document.getElementById('dKahan').value,shop_phone:document.getElementById('dPhone').value,shop_lat:l.lat,shop_lng:l.lng,km:Number(document.getElementById('dKm').value)})}); document.getElementById('pPhone').value = document.getElementById('dPhone').value; openPay(10,'DELIVERY'); }
+async function sendPay(){ await fetch('/api/pay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.getElementById('pName').value,phone:document.getElementById('pPhone').value,plan:document.getElementById('pPlan').value,utr:document.getElementById('pUtr').value})}); document.getElementById('pUtr').value=''; document.getElementById('pay').innerHTML='<h3>UTR Bhej Diya!</h3><p>Admin Telegram pe dekh ke Accept karega. Thodi der me Add Live ho jayega.</p>'; }
 async function sendReport(){ await fetch('/api/report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({item_type:'item',item_id:Number(document.getElementById('rId').value),reported_by:document.getElementById('rBy').value,reason:document.getElementById('rReason').value,owner_phone:document.getElementById('rOwner').value})}); alert('Report ho gaya!'); }
 async function loadAll(){ let l=await getLoc(); let r=await fetch('/api/items?lat='+l.lat+'&lng='+l.lng); let d=await r.json(); let h=''; d.forEach(x=>{ h+='<div class="item"><b>'+x.title+'</b> - Rs '+x.price+' - '+x.type+'<br>Phone: '+x.phone+' - '+Math.round(x.distance||0)+' KM door</div>'; }); document.getElementById('listArea').innerHTML=h||'Paas me kuch nahi mila'; }
 </script>

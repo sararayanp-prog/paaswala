@@ -7,9 +7,9 @@ app.use(express.json({limit:'10mb'}));
 app.use(express.static('public'));
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
-const TOKEN = process.env.TELEGRAM_TOKEN;
-const ADMIN_ID = process.env.TELEGRAM_CHAT_ID;
-const UPI = process.env.UPI_ID || process.env.UPI || '';
+const TOKEN = process.env.BOT_TOKEN;
+const ADMIN_ID = process.env.ADMIN_CHAT_ID;
+const UPI = process.env.UPI_ID || '';
 
 let downloadCount = 0;
 let downloadToday = 0;
@@ -85,7 +85,6 @@ app.post('/api/report', async (req,res)=>{
 app.post('/telegram', async (req,res)=>{
   try{
     let upd = req.body;
-    // Button dabaya - Accept / Reject
     if(upd.callback_query){
       let data = upd.callback_query.data;
       let chatId = upd.callback_query.message.chat.id;
@@ -101,7 +100,6 @@ app.post('/telegram', async (req,res)=>{
       }
       return res.json({ok:true});
     }
-    // Message aaya
     if(upd.message && upd.message.text){
       let text = upd.message.text.trim();
       let chatId = upd.message.chat.id;

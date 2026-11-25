@@ -1,3 +1,6 @@
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1a5cff">
+</div>
 <!DOCTYPE html>
 <html lang="hi">
 <head>
@@ -24,6 +27,10 @@ button{background:#1a5cff;color:#fff;border:0;padding:12px;border-radius:10px;wi
 .qrbox img{width:220px;height:220px;border:1px solid #ddd;border-radius:10px}
 </style>
 </head>
+<div id="installBox" style="display:block;background:#1a5cff;color:#fff;padding:12px;text-align:center">
+  📱 PaasWala App Download Karo - Roz Subah 9 Baje Suvichar Paao
+  <br><button id="installBtn" style="background:#fff;color:#1a5cff;width:auto;padding:8px 20px;margin-top:6px">Download App</button>
+</div>
 <body>
 <header><h1>🛍️ PaasWala</h1><p>Paas Ka Kaam • Paas Ka Samaan • 25 KM Ke Andar</p></header>
 
@@ -70,7 +77,15 @@ button{background:#1a5cff;color:#fff;border:0;padding:12px;border-radius:10px;wi
 <div id="help" class="box"><h3>Kaise Chalega?</h3><p>1. Apna kaam / samaan daalo<br>2. QR se pay karo, UTR daalo<br>3. Admin Accept karega, Add Live<br>4. Paas wala hi dekhega - 25 KM ke andar, Delivery 10 KM</p></div>
 
 <div class="list" id="mainList"></div>
-
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+document.getElementById('installBtn').onclick = async () => {
+  if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; }
+  else { alert('Chrome ke Menu me jao -> Add to Home Screen dabao'); }
+  if (Notification.permission !== 'granted') { Notification.requestPermission(); }
+  if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
+};
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
 <script>
 let myUpi = '';
 let currentPay = { amount: 30, plan: 'ITEM' };

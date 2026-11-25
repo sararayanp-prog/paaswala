@@ -152,7 +152,9 @@ app.post('/api/accept', async (req, res) => {
   await pool.query(`UPDATE items SET status='LIVE' WHERE phone=$1`, [phone]);
   res.json({ ok: true, msg: 'Accept ho gaya, Add Live' });
 });
-
+app.get('/api/upi', (req, res) => {
+  res.json({ upi: process.env.UPI_ID });
+});
 app.get('/', (req, res) => { res.send('PaasWala Live Hai'); });
 
 app.listen(process.env.PORT || 10000, () => console.log('PaasWala Live'));

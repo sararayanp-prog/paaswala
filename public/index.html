@@ -1,17 +1,15 @@
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#1a5cff">
-</div>
 <!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PaasWala - Paas Ka Kaam, Paas Ka Samaan</title>
+<title>PaasWala</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1a5cff">
 <style>
 body{margin:0;font-family:Arial;background:#fff;color:#222}
 header{background:#1a5cff;color:#fff;text-align:center;padding:14px}
 header h1{margin:0;font-size:26px}
-header p{margin:4px 0 0;font-size:14px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px}
 .card{background:#eef4ff;border:2px solid #1a5cff;border-radius:14px;padding:16px;text-align:center;cursor:pointer}
 .card span{font-size:36px;display:block}
@@ -20,22 +18,17 @@ header p{margin:4px 0 0;font-size:14px}
 .box{margin:12px;padding:14px;border:1px solid #ddd;border-radius:12px;display:none}
 input,select{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:8px;font-size:15px;box-sizing:border-box}
 button{background:#1a5cff;color:#fff;border:0;padding:12px;border-radius:10px;width:100%;font-size:16px;margin-top:6px}
-.list{margin:12px}
-.item{border:1px solid #ddd;padding:10px;border-radius:10px;margin-bottom:8px}
-.upi{background:#fff3cd;padding:12px;margin:12px;border-radius:10px;text-align:center;font-size:16px}
-.qrbox{text-align:center;background:#f9f9f9;padding:12px;border-radius:12px;margin-bottom:10px}
+.upi{background:#fff3cd;padding:12px;margin:12px;border-radius:10px;text-align:center}
+.qrbox{text-align:center;background:#f9f9f9;padding:12px;border-radius:12px}
 .qrbox img{width:220px;height:220px;border:1px solid #ddd;border-radius:10px}
+#installPopup{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:999;align-items:center;justify-content:center}
+#installPopup .pop{background:#fff;margin:20px;padding:20px;border-radius:16px;text-align:center;max-width:340px;width:100%}
 </style>
 </head>
-<div id="installBox" style="display:block;background:#1a5cff;color:#fff;padding:12px;text-align:center">
-  📱 PaasWala App Download Karo - Roz Subah 9 Baje Suvichar Paao
-  <br><button id="installBtn" style="background:#fff;color:#1a5cff;width:auto;padding:8px 20px;margin-top:6px">Download App</button>
-</div>
 <body>
-<header><h1>🛍️ PaasWala</h1><p>Paas Ka Kaam • Paas Ka Samaan • 25 KM Ke Andar</p></header>
-
+<div id="installPopup"><div class="pop"><h2>PaasWala</h2><p><b>App Download Karo</b><br>Roz Subah 9 Baje Suvichar Paao<br>PaasWala Available - Hum aapki aaj kya seva kare?</p><button id="installBtn">Download App</button><p id="installHelp" style="display:none;font-size:12px">Chrome ke upar 3 dot dabao - Add to Home Screen dabao</p><button onclick="closePopup()" style="background:#eee;color:#333">Baad Me</button></div></div>
+<header><h1>PaasWala</h1><p>Paas Ka Kaam - Paas Ka Samaan - 25 KM Ke Andar</p></header>
 <div class="upi">Pay Karne Ke Liye UPI: <b id="upiText">Loading...</b></div>
-
 <div class="grid">
 <div class="card" onclick="show('sell')"><span>🛒</span><b>Bechna / Kharidna</b><small>Sell / Buy / Rent</small></div>
 <div class="card" onclick="show('worker')"><span>👷</span><b>Kaam Wala</b><small>Skill Wala Dhoondo</small></div>
@@ -46,69 +39,33 @@ button{background:#1a5cff;color:#fff;border:0;padding:12px;border-radius:10px;wi
 <div class="card" onclick="show('report')"><span>🚨</span><b>Report Karo</b><small>Galat Add Ki Shikayat</small></div>
 <div class="card" onclick="show('help')"><span>❓</span><b>Madad</b><small>Kaise Chalega?</small></div>
 </div>
-
-<div id="sell" class="box"><h3>Bechna Hai - 30 Rs / Item</h3><input id="sTitle" placeholder="Kya bechna hai? ex - Cycle"><input id="sPrice" type="number" placeholder="Daam - ex 500"><select id="sType"><option value="SELL">Bechna Hai</option><option value="BUY">Kharidna Hai</option><option value="RENT">Kiraye Pe Dena Hai</option></select><input id="sPhone" placeholder="Phone Number"><button onclick="addItem()">Add Karo</button></div>
-
-<div id="worker" class="box"><h3>Kaam Wala - 10 Rs / Week</h3><input id="wName" placeholder="Tumhara Naam"><input id="wSkill" placeholder="Skill - ex Plumber, Electrician"><input id="wCharge" type="number" placeholder="Charge - ex 200"><input id="wPhone" placeholder="Phone Number"><button onclick="addWorker()">Add Karo</button></div>
-
-<div id="mazdoori" class="box"><h3>Mazdoor Chahiye - 10 Rs / Day</h3><input id="mKya" placeholder="Kya karwana hai? ex - Ghar ki safai"><input id="mKab" type="date"><input id="mPaisa" type="number" placeholder="Paisa - ex 400"><input id="mAadmi" type="number" placeholder="Kitne Aadmi - ex 2"><input id="mPhone" placeholder="Phone Number"><button onclick="addMazdoori()">Add Karo</button></div>
-
-<div id="delivery" class="box"><h3>Delivery - 10 Rs / Week</h3><input id="dShop" placeholder="Dukaan Ka Naam"><input id="dKya" placeholder="Kya bhejna hai?"><input id="dKahan" placeholder="Kahan bhejna hai?"><input id="dPhone" placeholder="Dukaan Phone"><input id="dKm" type="number" placeholder="Kitna KM - ex 4"><button onclick="addDelivery()">Delivery Boy Dhoondo</button><p>Price: 3 KM tak 20 Rs, uske upar har KM 5 Rs</p></div>
-
+<div id="sell" class="box"><h3>Bechna Hai - 30 Rs / Item</h3><input id="sTitle" placeholder="Kya bechna hai?"><input id="sPrice" type="number" placeholder="Daam"><select id="sType"><option value="SELL">Bechna Hai</option><option value="BUY">Kharidna Hai</option><option value="RENT">Kiraye Pe Dena Hai</option></select><input id="sPhone" placeholder="Phone Number"><button onclick="addItem()">Add Karo</button></div>
+<div id="worker" class="box"><h3>Kaam Wala - 10 Rs / Week</h3><input id="wName" placeholder="Tumhara Naam"><input id="wSkill" placeholder="Skill"><input id="wCharge" type="number" placeholder="Charge"><input id="wPhone" placeholder="Phone Number"><button onclick="addWorker()">Add Karo</button></div>
+<div id="mazdoori" class="box"><h3>Mazdoor Chahiye - 10 Rs / Day</h3><input id="mKya" placeholder="Kya karwana hai?"><input id="mKab" type="date"><input id="mPaisa" type="number" placeholder="Paisa"><input id="mAadmi" type="number" placeholder="Kitne Aadmi"><input id="mPhone" placeholder="Phone Number"><button onclick="addMazdoori()">Add Karo</button></div>
+<div id="delivery" class="box"><h3>Delivery - 10 Rs / Week</h3><input id="dShop" placeholder="Dukaan Ka Naam"><input id="dKya" placeholder="Kya bhejna hai?"><input id="dKahan" placeholder="Kahan bhejna hai?"><input id="dPhone" placeholder="Dukaan Phone"><input id="dKm" type="number" placeholder="Kitna KM"><button onclick="addDelivery()">Delivery Boy Dhoondo</button></div>
 <div id="list" class="box"><h3>Paas Wala Dekho</h3><button onclick="loadAll()">Paas Wala Sab Dekho</button><div id="listArea"></div></div>
-
-<div id="pay" class="box">
-<h3>Payment Karo</h3>
-<div class="qrbox">
-<h3 id="payAmount">Pay Karna Hai: Rs 30</h3>
-<img id="qrImg" src="">
-<p>QR Scan Karo - Ya UPI Copy Karke Pay Karo</p>
-</div>
-<input id="pName" placeholder="Tumhara Naam">
-<input id="pPhone" placeholder="Phone Number">
-<input id="pPlan" placeholder="Plan - ITEM / WORKER / MAZDOORI_DAY">
-<input id="pUtr" placeholder="UTR Number Yahan Likho">
-<button onclick="sendPay()">UTR Submit Karo</button>
-<p>Admin Telegram pe dekh ke Accept karega, phir Add Live ho jayega.</p>
-</div>
-
-<div id="report" class="box"><h3>Report Karo</h3><input id="rId" type="number" placeholder="Item ID"><input id="rBy" placeholder="Tumhara Phone"><input id="rReason" placeholder="Kya galat hai?"><input id="rOwner" placeholder="Uska Phone - Jiska Add Hai"><button onclick="sendReport()">Report Karo</button><p>1st - Notification, 2nd - Warning, 3rd - Auto Block</p></div>
-
-<div id="help" class="box"><h3>Kaise Chalega?</h3><p>1. Apna kaam / samaan daalo<br>2. QR se pay karo, UTR daalo<br>3. Admin Accept karega, Add Live<br>4. Paas wala hi dekhega - 25 KM ke andar, Delivery 10 KM</p></div>
-
-<div class="list" id="mainList"></div>
-let deferredPrompt = null;
-window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-document.getElementById('installBtn').onclick = async () => {
-  if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; }
-  else { alert('Chrome ke Menu me jao -> Add to Home Screen dabao'); }
-  if (Notification.permission !== 'granted') { Notification.requestPermission(); }
-  if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
-};
-if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
+<div id="pay" class="box"><h3>Payment Karo</h3><div class="qrbox"><h3 id="payAmount">Pay Karna Hai: Rs 30</h3><img id="qrImg" src=""><p>QR Scan Karo</p></div><input id="pName" placeholder="Tumhara Naam"><input id="pPhone" placeholder="Phone Number"><input id="pPlan" placeholder="Plan"><input id="pUtr" placeholder="UTR Number Yahan Likho"><button onclick="sendPay()">UTR Submit Karo</button></div>
+<div id="report" class="box"><h3>Report Karo</h3><input id="rId" type="number" placeholder="Item ID"><input id="rBy" placeholder="Tumhara Phone"><input id="rReason" placeholder="Kya galat hai?"><input id="rOwner" placeholder="Uska Phone"><button onclick="sendReport()">Report Karo</button></div>
+<div id="help" class="box"><h3>Kaise Chalega?</h3><p>1. Apna kaam daalo<br>2. QR se pay karo, UTR daalo<br>3. Admin Accept karega, Add Live</p></div>
 <script>
-let myUpi = '';
-let currentPay = { amount: 30, plan: 'ITEM' };
-function show(id){ document.querySelectorAll('.box').forEach(b=>b.style.display='none'); document.getElementById(id).style.display='block'; window.scrollTo(0,400); }
-async function getLoc(){ return new Promise((res)=>{ navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude}),()=>res({lat:22.3,lng:73.18})) }); }
-fetch('/api/upi').then(r=>r.json()).then(d=>{ myUpi = d.upi; document.getElementById('upiText').innerText = d.upi || 'UPI nahi mila'; });
-function openPay(amount, plan){
-  currentPay = { amount, plan };
-  document.getElementById('pay').style.display = 'block';
-  document.getElementById('pPlan').value = plan;
-  document.getElementById('payAmount').innerText = 'Pay Karna Hai: Rs ' + amount;
-  let upiLink = 'upi://pay?pa=' + encodeURIComponent(myUpi) + '&pn=PaasWala&am=' + amount + '&cu=INR';
-  document.getElementById('qrImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(upiLink);
-  document.getElementById('pay').scrollIntoView({behavior:'smooth'});
-}
-async function addItem(){ let l=await getLoc(); await fetch('/api/items',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:document.getElementById('sTitle').value,price:Number(document.getElementById('sPrice').value),type:document.getElementById('sType').value,rent_type:'',area:'',phone:document.getElementById('sPhone').value,lat:l.lat,lng:l.lng})}); document.getElementById('pPhone').value = document.getElementById('sPhone').value; openPay(30,'ITEM'); }
-async function addWorker(){ let l=await getLoc(); await fetch('/api/workers',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.getElementById('wName').value,skill:document.getElementById('wSkill').value,charge:Number(document.getElementById('wCharge').value),area:'',phone:document.getElementById('wPhone').value,lat:l.lat,lng:l.lng})}); document.getElementById('pPhone').value = document.getElementById('wPhone').value; openPay(10,'WORKER'); }
-async function addMazdoori(){ let l=await getLoc(); await fetch('/api/mazdoori',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kya_karwana:document.getElementById('mKya').value,kab:document.getElementById('mKab').value,paisa:Number(document.getElementById('mPaisa').value),kitne_aadmi:Number(document.getElementById('mAadmi').value),area:'',phone:document.getElementById('mPhone').value,lat:l.lat,lng:l.lng})}); document.getElementById('pPhone').value = document.getElementById('mPhone').value; openPay(10,'MAZDOORI_DAY'); }
-async function addDelivery(){ let l=await getLoc(); await fetch('/api/delivery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({shop_name:document.getElementById('dShop').value,kya_bhejna:document.getElementById('dKya').value,kahan_bhejna:document.getElementById('dKahan').value,shop_phone:document.getElementById('dPhone').value,shop_lat:l.lat,shop_lng:l.lng,km:Number(document.getElementById('dKm').value)})}); document.getElementById('pPhone').value = document.getElementById('dPhone').value; openPay(10,'DELIVERY'); }
-async function sendPay(){ await fetch('/api/pay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.getElementById('pName').value,phone:document.getElementById('pPhone').value,plan:document.getElementById('pPlan').value,utr:document.getElementById('pUtr').value})}); document.getElementById('pUtr').value=''; document.getElementById('pay').innerHTML='<h3>UTR Bhej Diya!</h3><p>Admin Telegram pe dekh ke Accept karega. Thodi der me Add Live ho jayega.</p>'; }
-async function sendReport(){ await fetch('/api/report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({item_type:'item',item_id:Number(document.getElementById('rId').value),reported_by:document.getElementById('rBy').value,reason:document.getElementById('rReason').value,owner_phone:document.getElementById('rOwner').value})}); alert('Report ho gaya!'); }
-async function loadAll(){ let l=await getLoc(); let r=await fetch('/api/items?lat='+l.lat+'&lng='+l.lng); let d=await r.json(); let h=''; d.forEach(x=>{ h+='<div class="item"><b>'+x.title+'</b> - Rs '+x.price+' - '+x.type+'<br>Phone: '+x.phone+' - '+Math.round(x.distance||0)+' KM door</div>'; }); document.getElementById('listArea').innerHTML=h||'Paas me kuch nahi mila'; }
+let myUpi='';
+function show(id){document.querySelectorAll('.box').forEach(b=>b.style.display='none');document.getElementById(id).style.display='block';}
+function closePopup(){document.getElementById('installPopup').style.display='none';}
+async function getLoc(){return new Promise((res)=>{navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude,lng:p.coords.longitude}),()=>res({lat:22.3,lng:73.18}))});}
+fetch('/api/upi').then(r=>r.json()).then(d=>{myUpi=d.upi;document.getElementById('upiText').innerText=d.upi||'UPI nahi mila';});
+function openPay(amount,plan){document.getElementById('pay').style.display='block';document.getElementById('pPlan').value=plan;document.getElementById('payAmount').innerText='Pay Karna Hai: Rs '+amount;let upiLink='upi://pay?pa='+encodeURIComponent(myUpi)+'&pn=PaasWala&am='+amount+'&cu=INR';document.getElementById('qrImg').src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(upiLink);}
+async function addItem(){let l=await getLoc();await fetch('/api/items',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:document.getElementById('sTitle').value,price:Number(document.getElementById('sPrice').value),type:document.getElementById('sType').value,rent_type:'',area:'',phone:document.getElementById('sPhone').value,lat:l.lat,lng:l.lng})});document.getElementById('pPhone').value=document.getElementById('sPhone').value;openPay(30,'ITEM');}
+async function addWorker(){let l=await getLoc();await fetch('/api/workers',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.getElementById('wName').value,skill:document.getElementById('wSkill').value,charge:Number(document.getElementById('wCharge').value),area:'',phone:document.getElementById('wPhone').value,lat:l.lat,lng:l.lng})});document.getElementById('pPhone').value=document.getElementById('wPhone').value;openPay(10,'WORKER');}
+async function addMazdoori(){let l=await getLoc();await fetch('/api/mazdoori',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kya_karwana:document.getElementById('mKya').value,kab:document.getElementById('mKab').value,paisa:Number(document.getElementById('mPaisa').value),kitne_aadmi:Number(document.getElementById('mAadmi').value),area:'',phone:document.getElementById('mPhone').value,lat:l.lat,lng:l.lng})});document.getElementById('pPhone').value=document.getElementById('mPhone').value;openPay(10,'MAZDOORI_DAY');}
+async function addDelivery(){let l=await getLoc();await fetch('/api/delivery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({shop_name:document.getElementById('dShop').value,kya_bhejna:document.getElementById('dKya').value,kahan_bhejna:document.getElementById('dKahan').value,shop_phone:document.getElementById('dPhone').value,shop_lat:l.lat,shop_lng:l.lng,km:Number(document.getElementById('dKm').value)})});document.getElementById('pPhone').value=document.getElementById('dPhone').value;openPay(10,'DELIVERY');}
+async function sendPay(){await fetch('/api/pay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.getElementById('pName').value,phone:document.getElementById('pPhone').value,plan:document.getElementById('pPlan').value,utr:document.getElementById('pUtr').value})});document.getElementById('pay').innerHTML='<h3>UTR Bhej Diya!</h3><p>Admin Accept karega.</p>';}
+async function sendReport(){await fetch('/api/report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({item_type:'item',item_id:Number(document.getElementById('rId').value),reported_by:document.getElementById('rBy').value,reason:document.getElementById('rReason').value,owner_phone:document.getElementById('rOwner').value})});}
+async function loadAll(){let l=await getLoc();let r=await fetch('/api/items?lat='+l.lat+'&lng='+l.lng);let d=await r.json();let h='';d.forEach(x=>{h+='<div><b>'+x.title+'</b> - Rs '+x.price+'</div>';});document.getElementById('listArea').innerHTML=h||'Paas me kuch nahi mila';}
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();deferredPrompt=e;});
+window.addEventListener('load',()=>{setTimeout(()=>{if(!window.matchMedia('(display-mode: standalone)').matches){document.getElementById('installPopup').style.display='flex';}},800);});
+document.getElementById('installBtn').onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();let c=await deferredPrompt.userChoice;if(c.outcome==='accepted'){closePopup();}deferredPrompt=null;}else{document.getElementById('installHelp').style.display='block';}if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}};
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}
 </script>
 </body>
 </html>
-
